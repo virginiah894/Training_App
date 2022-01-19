@@ -16,10 +16,13 @@ class VideoInfo extends StatefulWidget {
 
 class _VideoInfoState extends State<VideoInfo> {
 
-  List info =[];
-  _initData(){
-    DefaultAssetBundle.of(context).loadString('json/videoinfo.json').then((value){
-      info = json.decode(value);
+  List videoinfo =[];
+  bool _playArea=false;
+  _initData() async {
+    await DefaultAssetBundle.of(context).loadString('json/videoinfo.json').then((value){
+     setState(() {
+       videoinfo = json.decode(value);
+     });
     });
 
   }
@@ -228,6 +231,9 @@ class _VideoInfoState extends State<VideoInfo> {
                         ],
 
                       ),
+                      SizedBox(height: 20,),
+                      Expanded(child:_listView()
+                      ),
 
                     ],
                   ),
@@ -238,5 +244,225 @@ class _VideoInfoState extends State<VideoInfo> {
 
           ),
     ));
+  }
+  _ListView(int index){
+    return Container(
+      height: 135,
+
+
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                    image: AssetImage(
+                        videoinfo[index]["thumbnail"]
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+
+              ),
+              SizedBox(width: 10,),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(videoinfo[index]['title'],
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold
+                    ),),
+                  SizedBox(height: 10,),
+                  Padding(
+                    padding: EdgeInsets.only(top:5),
+                    child: Text(
+                      videoinfo[index]['time'],
+                      style: TextStyle(
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  )
+                ],
+              )
+
+            ],
+
+          ),
+          SizedBox(height: 18,),
+          Row(
+            children: [
+              Container(
+                width: 80,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: Color(0xFFeaeefc),
+                  borderRadius:BorderRadius.circular(10),
+                ),
+
+                child: Text(
+                  '15s Rest',
+                  style: TextStyle(
+                      color: Color(0xFF839fed)
+                  ),
+
+                ),
+
+              ),
+              Row(
+                children: [
+                  for(int i =0;i<70; i++)
+                    i.isEven?Container(
+                      width:3 ,
+                      height:1,
+                      decoration: BoxDecoration(
+                        color: Color(0xFF839fed),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ):Container(
+                      width:3 ,
+                      height:1,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+
+                ],
+              ),
+            ],
+          ),
+
+
+
+        ],
+      ),
+
+    );
+  }
+  _listView(){
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(horizontal:30,vertical:8),
+      itemCount: videoinfo.length ,
+      itemBuilder: (_, int index){
+        return GestureDetector(
+          onTap: (){
+            debugPrint(index.toString());
+            setState(() {
+              if(_playArea==false){
+                _playArea=true;
+              }
+
+            });
+          },
+          child:_BuildCard(index),
+        );
+      },
+    );
+  }
+  _BuildCard(int index){
+    return Container(
+      height: 135,
+
+
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                    image: AssetImage(
+                        videoinfo[index]["thumbnail"]
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+
+              ),
+              SizedBox(width: 10,),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(videoinfo[index]['title'],
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold
+                    ),),
+                  SizedBox(height: 10,),
+                  Padding(
+                    padding: EdgeInsets.only(top:5),
+                    child: Text(
+                      videoinfo[index]['time'],
+                      style: TextStyle(
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  )
+                ],
+              )
+
+            ],
+
+          ),
+          SizedBox(height: 18,),
+          Row(
+            children: [
+              Container(
+                width: 80,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: Color(0xFFeaeefc),
+                  borderRadius:BorderRadius.circular(10),
+                ),
+
+                child: Text(
+                  '15s Rest',
+                  style: TextStyle(
+                      color: Color(0xFF839fed)
+                  ),
+
+                ),
+
+              ),
+              Row(
+                children: [
+                  for(int i =0;i<70; i++)
+                    i.isEven?Container(
+                      width:3 ,
+                      height:1,
+                      decoration: BoxDecoration(
+                        color: Color(0xFF839fed),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ):Container(
+                      width:3 ,
+                      height:1,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+
+                ],
+              ),
+            ],
+          ),
+
+
+
+        ],
+      ),
+
+    );
   }
 }
