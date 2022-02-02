@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get.dart';
+import 'package:video_player/video_player.dart';
 import 'colors.dart' as color;
 import 'home_page.dart';
 
@@ -18,6 +19,8 @@ class _VideoInfoState extends State<VideoInfo> {
 
   List videoinfo =[];
   bool _playArea=false;
+  late VideoPlayerController _controller;
+
   _initData() async {
     await DefaultAssetBundle.of(context).loadString('json/videoinfo.json').then((value){
      setState(() {
@@ -37,7 +40,8 @@ class _VideoInfoState extends State<VideoInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-      decoration: BoxDecoration(
+      decoration:_playArea==false?
+      BoxDecoration(
         gradient: LinearGradient(
           colors: [
             color.AppColor.gradientFirst.withOpacity(0.8),
@@ -46,10 +50,12 @@ class _VideoInfoState extends State<VideoInfo> {
               begin: const FractionalOffset(0.0, 0.4),
         end: Alignment.topRight,
         )
+      ):BoxDecoration(
+        color: color.AppColor.gradientSecond,
       ),
           child: Column(
             children: [
-              Container(
+              _playArea==false?Container(
                 padding: const EdgeInsets.only(top:70,left:30,right:30 ),
                 width: MediaQuery.of(context).size.width,
                 height:300,
@@ -181,6 +187,33 @@ class _VideoInfoState extends State<VideoInfo> {
                   ],
 
                 ),
+              ):Container(
+                child: Column(
+                  children: [
+                    Container(
+                      height: 100,
+                      padding: const EdgeInsets.only(top:50,left: 30,right: 30,),
+                      child: Row(
+                        children: [
+                          InkWell(
+                            onTap: (){
+                              debugPrint('tapped');
+                            },
+                            child:Icon(Icons.arrow_back_ios,
+                            size:20,
+                            color: color.AppColor.secondPageIconColor,) ,
+                          ),
+                          Expanded(child: Container()),
+                          Icon(Icons.info_outline,
+                          size: 20,
+                          color: color.AppColor.secondPageIconColor,)
+                        ],
+                      ),
+
+                    ),
+                    _playView(context),
+                  ],
+                ),
               ),
               Expanded(
                 child: Container(
@@ -245,6 +278,7 @@ class _VideoInfoState extends State<VideoInfo> {
           ),
     ));
   }
+
   _ListView(int index){
     return Container(
       height: 135,
@@ -345,6 +379,20 @@ class _VideoInfoState extends State<VideoInfo> {
 
     );
   }
+  _onTapVideo(int index){
+    final controller = VideoPlayerController.network(videoinfo[index]['videoUrl']);
+    _controller= controller;
+    setState(() {
+    });
+    controller..initialize().then((_){
+      controller.play();
+
+      setState(() {
+
+      });
+    });
+
+  }
   _listView(){
     return ListView.builder(
       padding: EdgeInsets.symmetric(horizontal:30,vertical:8),
@@ -352,6 +400,7 @@ class _VideoInfoState extends State<VideoInfo> {
       itemBuilder: (_, int index){
         return GestureDetector(
           onTap: (){
+            _onTapVideo(index);
             debugPrint(index.toString());
             setState(() {
               if(_playArea==false){
@@ -464,5 +513,19 @@ class _VideoInfoState extends State<VideoInfo> {
       ),
 
     );
+  }
+  Widget _playView(BuildContext context){
+    final controller = _controller;
+    if(controller!=null&& controller.value.isInitialized){
+      return Container(
+        height: 300,
+        width: 300,
+        child: VideoPlayer(controller),
+      ) ;
+    } else{
+      return Text('Being initialized please Wait...');
+
+    }
+
   }
 }
